@@ -50,3 +50,7 @@
 - DELETE : /comments/:id
 - POST : /comments/bulk
 - DELETE : /comments/bulk
+
+#### Postman testing URL
+
+<a href="https://web.postman.co/workspace/My-Workspace~949df246-e64d-4dc5-8be8-f60b72f5bf50/collection/22735243-0f2efaff-d41a-427d-ab0e-08e515d97022?action=share&source=copy-link&creator=22735243">Live test with postman </a>
