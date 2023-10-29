@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler";
 import client from "../prisma/client/client";
 import CustomError from "../helper/customError";
 import { successResponse } from "../helper/responseHandler";
+import { Request, Response } from "express";
 
 /**
  * @method GET
@@ -10,25 +11,27 @@ import { successResponse } from "../helper/responseHandler";
  * @access Public
  */
 
-export const getAllComments = asyncHandler(async (req, res) => {
-  const comments = await client.comment.findMany({
-    include: {
-      post: true,
-    },
-  });
+export const getAllComments = asyncHandler(
+  async (req: Request, res: Response) => {
+    const comments = await client.comment.findMany({
+      include: {
+        post: true,
+      },
+    });
 
-  if (!comments.length)
-    throw new CustomError("Couldn't find any comment data", 404);
+    if (!comments.length)
+      throw new CustomError("Couldn't find any comment data", 404);
 
-  // response send
-  successResponse(res, {
-    statusCode: 200,
-    message: "All comments data",
-    payload: {
-      data: comments,
-    },
-  });
-});
+    // response send
+    successResponse(res, {
+      statusCode: 200,
+      message: "All comments data",
+      payload: {
+        data: comments,
+      },
+    });
+  }
+);
 
 /**
  * @method GET
@@ -37,23 +40,25 @@ export const getAllComments = asyncHandler(async (req, res) => {
  * @access Public
  */
 
-export const getCommentById = asyncHandler(async (req, res) => {
-  const comment = await client.comment.findUnique({
-    where: { id: Number(req.params.id) },
-    include: {
-      post: true,
-    },
-  });
+export const getCommentById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const comment = await client.comment.findUnique({
+      where: { id: Number(req.params.id) },
+      include: {
+        post: true,
+      },
+    });
 
-  if (!comment) throw new CustomError("Couldn't find any comment data", 404);
+    if (!comment) throw new CustomError("Couldn't find any comment data", 404);
 
-  // response send
-  successResponse(res, {
-    statusCode: 200,
-    message: "Comment data",
-    payload: comment,
-  });
-});
+    // response send
+    successResponse(res, {
+      statusCode: 200,
+      message: "Comment data",
+      payload: comment,
+    });
+  }
+);
 
 /**
  * @method POST
@@ -62,28 +67,30 @@ export const getCommentById = asyncHandler(async (req, res) => {
  * @access Public
  */
 
-export const createComment = asyncHandler(async (req, res) => {
-  // post find
-  const post = await client.post.findUnique({
-    where: { id: Number(req.body.postId) },
-  });
+export const createComment = asyncHandler(
+  async (req: Request, res: Response) => {
+    // post find
+    const post = await client.post.findUnique({
+      where: { id: Number(req.body.postId) },
+    });
 
-  if (!post) throw new CustomError("Couldn't find any post data.", 404);
+    if (!post) throw new CustomError("Couldn't find any post data.", 404);
 
-  const newComment = await client.comment.create({
-    data: {
-      ...req.body,
-      postId: Number(req.body.postId),
-    },
-  });
+    const newComment = await client.comment.create({
+      data: {
+        ...req.body,
+        postId: Number(req.body.postId),
+      },
+    });
 
-  // response send
-  successResponse(res, {
-    statusCode: 200,
-    message: "Comment created",
-    payload: newComment,
-  });
-});
+    // response send
+    successResponse(res, {
+      statusCode: 200,
+      message: "Comment created",
+      payload: newComment,
+    });
+  }
+);
 
 /**
  * @method PUT
