@@ -41,7 +41,7 @@ model Comment {
   id     Int    @id @default(autoincrement())
   body   String
   name   String
-  email  String 
+  email  String
   postId Int
   post   Post   @relation(fields: [postId], references: [id])
 }
