@@ -5,6 +5,7 @@ import CustomError from "../helper/customError";
 import { successResponse } from "../helper/responseHandler";
 import hashPassword from "../helper/hashPassword";
 import filterQuery from "../helper/filterQuery";
+import paginationData from "../helper/pagination";
 
 /**
  * @method GET
@@ -36,10 +37,19 @@ export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
   });
 
   if (!users.length) throw new CustomError("Couldn't find any user data", 404);
+
+  //count
+  const count = await client.user.count({ where: { ...filters } });
+
+  // pagination
+  const pagination = paginationData(queries, count);
+
+  // response send
   successResponse(res, {
     statusCode: 200,
     message: "All users data",
     payload: {
+      pagination,
       data: users,
     },
   });

@@ -40,6 +40,7 @@ export const getAllPosts = asyncHandler(async (req: Request, res: Response) => {
 
   // pagination
   const pagination = paginationData(queries, count);
+
   // response send
   successResponse(res, {
     statusCode: 200,
