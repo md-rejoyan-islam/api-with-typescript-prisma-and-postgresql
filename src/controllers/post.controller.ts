@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler";
 import client from "../prisma/client/client";
 import CustomError from "../helper/customError";
 import { successResponse } from "../helper/responseHandler";
+import { Request, Response } from "express";
 
 /**
  * @method GET
@@ -10,7 +11,7 @@ import { successResponse } from "../helper/responseHandler";
  * @access Public
  */
 
-export const getAllPosts = asyncHandler(async (req, res) => {
+export const getAllPosts = asyncHandler(async (req: Request, res: Response) => {
   // filter query
   let filters: any = { ...req.query };
 
