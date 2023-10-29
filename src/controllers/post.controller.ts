@@ -124,7 +124,7 @@ export const getAllPosts = asyncHandler(async (req: Request, res: Response) => {
  * @access Public
  */
 
-export const getPostById = asyncHandler(async (req, res) => {
+export const getPostById = asyncHandler(async (req: Request, res: Response) => {
   const post = await client.post.findUnique({
     where: { id: Number(req.params.id) },
     include: {
@@ -152,7 +152,7 @@ export const getPostById = asyncHandler(async (req, res) => {
  * @access Public
  */
 
-export const createPost = asyncHandler(async (req, res) => {
+export const createPost = asyncHandler(async (req: Request, res: Response) => {
   const { userId } = req.body;
 
   const user = await client.user.findUnique({
@@ -183,43 +183,45 @@ export const createPost = asyncHandler(async (req, res) => {
  * @access Public
  */
 
-export const updatePostById = asyncHandler(async (req, res) => {
-  const post = await client.post.findUnique({
-    where: { id: Number(req.params.id) },
-    include: {
-      comments: true,
-      user: true,
-    },
-  });
-
-  if (!post) throw new CustomError("Couldn't find any post data", 404);
-
-  // if update user id
-  if (req.body.userId) {
-    const user = await client.user.findUnique({
-      where: { id: req.body.userId },
+export const updatePostById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const post = await client.post.findUnique({
+      where: { id: Number(req.params.id) },
+      include: {
+        comments: true,
+        user: true,
+      },
     });
 
-    if (!user) throw new CustomError("User not found", 404);
+    if (!post) throw new CustomError("Couldn't find any post data", 404);
+
+    // if update user id
+    if (req.body.userId) {
+      const user = await client.user.findUnique({
+        where: { id: req.body.userId },
+      });
+
+      if (!user) throw new CustomError("User not found", 404);
+    }
+
+    // updated post
+    const updatedPost = await client.post.update({
+      where: { id: Number(req.params.id) },
+      include: {
+        comments: true,
+        user: true,
+      },
+      data: req.body,
+    });
+
+    // response send
+    successResponse(res, {
+      statusCode: 200,
+      message: "Post data updated successfully",
+      payload: updatedPost,
+    });
   }
-
-  // updated post
-  const updatedPost = await client.post.update({
-    where: { id: Number(req.params.id) },
-    include: {
-      comments: true,
-      user: true,
-    },
-    data: req.body,
-  });
-
-  // response send
-  successResponse(res, {
-    statusCode: 200,
-    message: "Post data updated successfully",
-    payload: updatedPost,
-  });
-});
+);
 
 /**
  * @method DELETE
