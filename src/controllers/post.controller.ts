@@ -321,39 +321,41 @@ export const getUserOfPost = asyncHandler(
  * @access Admin
  */
 
-export const bulkCreatePosts = asyncHandler(async (req, res) => {
-  // before all data delete
-  await client.post.deleteMany({});
+export const bulkCreatePosts = asyncHandler(
+  async (req: Request, res: Response) => {
+    // before all data delete
+    await client.post.deleteMany({});
 
-  if (!Array.isArray(req.body))
-    throw new CustomError("Invalid format.Support array type data", 400);
+    if (!Array.isArray(req.body))
+      throw new CustomError("Invalid format.Support array type data", 400);
 
-  // user id check
+    // user id check
 
-  // all users
-  const users = await client.user.findMany();
+    // all users
+    const users = await client.user.findMany();
 
-  req.body.forEach((item) => {
-    const user = users.find((user) => user.id === Number(item.userId));
-    if (!user) throw new CustomError("User not found", 404);
-  });
+    req.body.forEach((item) => {
+      const user = users.find((user) => user.id === Number(item.userId));
+      if (!user) throw new CustomError("User not found", 404);
+    });
 
-  const createdPosts = await client.post.createMany({
-    data: req.body,
-  });
+    const createdPosts = await client.post.createMany({
+      data: req.body,
+    });
 
-  // created posts data
-  const posts = await client.post.findMany();
+    // created posts data
+    const posts = await client.post.findMany();
 
-  // response send
-  successResponse(res, {
-    statusCode: 201,
-    message: "Posts created successfully",
-    payload: {
-      data: posts,
-    },
-  });
-});
+    // response send
+    successResponse(res, {
+      statusCode: 201,
+      message: "Posts created successfully",
+      payload: {
+        data: posts,
+      },
+    });
+  }
+);
 
 /**
  * @method DELETE
@@ -362,7 +364,9 @@ export const bulkCreatePosts = asyncHandler(async (req, res) => {
  * @access Admin
  */
 
-export const bulkDeletePosts = asyncHandler(async (req, res) => {});
+export const bulkDeletePosts = asyncHandler(
+  async (req: Request, res: Response) => {}
+);
 
 /**
  * @method DELETE
@@ -389,29 +393,31 @@ export const bulkUpdatePosts = asyncHandler(async (req, res) => {});
  * @access  Public
  */
 
-export const commentOnPost = asyncHandler(async (req, res) => {
-  // comment on post
+export const commentOnPost = asyncHandler(
+  async (req: Request, res: Response) => {
+    // comment on post
 
-  const data = await client.post.update({
-    where: { id: Number(req.params.id) },
-    data: {
-      comments: {
-        create: {
-          ...req.body,
+    const data = await client.post.update({
+      where: { id: Number(req.params.id) },
+      data: {
+        comments: {
+          create: {
+            ...req.body,
+          },
         },
       },
-    },
-    include: {
-      comments: true,
-    },
-  });
+      include: {
+        comments: true,
+      },
+    });
 
-  // response send
-  successResponse(res, {
-    statusCode: 200,
-    message: "Comment Added",
-    payload: {
-      data,
-    },
-  });
-});
+    // response send
+    successResponse(res, {
+      statusCode: 200,
+      message: "Comment Added",
+      payload: {
+        data,
+      },
+    });
+  }
+);
