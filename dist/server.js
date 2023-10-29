@@ -8,7 +8,6 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const express_1 = __importDefault(require("express"));
 const morgan_1 = __importDefault(require("morgan"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
-const router_1 = __importDefault(require("./routes/router"));
 const errorHandler_1 = __importDefault(require("./middlewares/errorHandler"));
 const corsSetup_1 = __importDefault(require("./config/corsSetup"));
 const customError_1 = __importDefault(require("./helper/customError"));
@@ -28,10 +27,6 @@ app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
 // cors setup
 app.use((0, cors_1.default)(corsSetup_1.default));
-// app.use((req: CustomRequest, res: Response, next: NextFunction) => {
-//   req?.me;
-//   next();
-// });
 // morgan
 if (secret_1.NODE_ENV === "development")
     app.use((0, morgan_1.default)("dev"));
@@ -45,10 +40,6 @@ app.get("/", (req, res) => {
 app.use("/api/users", user_route_1.default);
 app.use("/api/posts", post_route_1.default);
 app.use("/api/comments", comment_route_1.default);
-// interface CustomRequest extends Request {
-//   me?: User;
-// }
-app.use("/api", router_1.default);
 // invalid route handler
 app.use((req, res, next) => {
     next(new customError_1.default("Invalid route", 404));

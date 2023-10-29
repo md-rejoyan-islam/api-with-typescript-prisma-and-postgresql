@@ -11,8 +11,6 @@ const errorHandler = (err, re, res, next) => {
     if (err instanceof library_1.PrismaClientValidationError) {
         message = "Validation Error or query error";
     }
-    console.log(err);
-    // console.log(err instanceof PrismaClientValidationError);
     (0, responseHandler_1.errorResponse)(res, {
         statusCode,
         message,

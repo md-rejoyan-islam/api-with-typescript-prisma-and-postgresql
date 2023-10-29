@@ -17,6 +17,8 @@ const express_async_handler_1 = __importDefault(require("express-async-handler")
 const client_1 = __importDefault(require("../prisma/client/client"));
 const customError_1 = __importDefault(require("../helper/customError"));
 const responseHandler_1 = require("../helper/responseHandler");
+const filterQuery_1 = __importDefault(require("../helper/filterQuery"));
+const pagination_1 = __importDefault(require("../helper/pagination"));
 /**
  * @method GET
  * @route /api/posts
@@ -25,58 +27,16 @@ const responseHandler_1 = require("../helper/responseHandler");
  */
 exports.getAllPosts = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // filter query
-    let filters = Object.assign({}, req.query);
-    // sort ,page,limit exclude from filters
-    const excludeFilters = ["sort", "page", "limit", "fields"];
-    excludeFilters.forEach((field) => delete filters[field]);
-    if (filters && typeof filters.userId === "string") {
-        filters.userId = Number(filters.userId);
-    }
-    // queries
-    const queries = {};
-    // Specify the fields to display
-    if (typeof req.query.fields === "string") {
-        const fields = req.query.fields.split(",");
-        const fieldsObj = fields.reduce((acc, field) => {
-            acc[field] = true;
-            return acc;
-        }, {});
-        queries.select = fieldsObj;
-    }
-    // sort query
-    if (typeof req.query.sort === "string") {
-        const sortItems = req.query.sort.split(",");
-        const sortItemObj = sortItems.reduce((acc, item) => {
-            if (item.startsWith("-")) {
-                acc[item.slice(1)] = "desc";
-            }
-            else {
-                acc[item] = "asc";
-            }
-            return acc;
-        }, {});
-        queries.orderBy = sortItemObj;
-    }
-    // pagination query
-    if (!req.query.page && !req.query.limit) {
-        queries.take = 10;
-        queries.page = 1;
-    }
-    if (req.query.page || req.query.limit) {
-        const { page = 1, limit = 10 } = req.query;
-        const skip = (Number(page) - 1) * Number(limit);
-        queries.page = Number(page);
-        queries.skip = skip;
-        queries.take = Number(limit);
-    }
-    // filter query
+    const { queries, filters } = (0, filterQuery_1.default)(req);
     const posts = yield client_1.default.post.findMany({
         include: {
             comments: true,
             user: true,
         },
         where: Object.assign({}, filters),
-        // select: queries.select,
+        // select: {
+        //   ...queries.select,    // select and include not work together
+        // },
         skip: queries.skip,
         take: queries.take,
         orderBy: queries.orderBy,
@@ -85,17 +45,8 @@ exports.getAllPosts = (0, express_async_handler_1.default)((req, res) => __await
         throw new customError_1.default("Couldn't find any post data", 404);
     //count
     const count = yield client_1.default.post.count({ where: Object.assign({}, filters) });
-    // page & limit
-    const page = Number(queries.page);
-    const limit = Number(queries.take);
-    // pagination object
-    const pagination = {
-        totalDocuments: count,
-        totalPages: Math.ceil(count / limit),
-        currentPage: page,
-        previousPage: page > 1 ? page - 1 : null,
-        nextPage: page < Math.ceil(count / limit) ? page + 1 : null,
-    };
+    // pagination
+    const pagination = (0, pagination_1.default)(queries, count);
     // response send
     (0, responseHandler_1.successResponse)(res, {
         statusCode: 200,

@@ -12,7 +12,7 @@ postRouter
     .route("/")
     .get(post_controller_1.getAllPosts)
     .post(post_validator_1.postValidator, validation_1.default, post_controller_1.createPost);
-// bulk post create
+// bulk post create and delete
 postRouter.route("/bulk").post(post_controller_1.bulkCreatePosts).delete(post_controller_1.bulkDeletePosts);
 postRouter
     .route("/:id")

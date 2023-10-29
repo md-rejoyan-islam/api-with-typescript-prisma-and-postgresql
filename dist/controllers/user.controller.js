@@ -18,6 +18,8 @@ const client_1 = __importDefault(require("../prisma/client/client"));
 const customError_1 = __importDefault(require("../helper/customError"));
 const responseHandler_1 = require("../helper/responseHandler");
 const hashPassword_1 = __importDefault(require("../helper/hashPassword"));
+const filterQuery_1 = __importDefault(require("../helper/filterQuery"));
+const pagination_1 = __importDefault(require("../helper/pagination"));
 /**
  * @method GET
  * @route /api/users
@@ -25,6 +27,8 @@ const hashPassword_1 = __importDefault(require("../helper/hashPassword"));
  * @access Public
  */
 exports.getAllUsers = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // filter query
+    const { queries, filters } = (0, filterQuery_1.default)(req);
     const users = yield client_1.default.user.findMany({
         include: {
             posts: {
@@ -33,13 +37,26 @@ exports.getAllUsers = (0, express_async_handler_1.default)((req, res) => __await
                 },
             },
         },
+        where: Object.assign({}, filters),
+        // select: {
+        //   ...queries.select,    // select and include not work together
+        // },
+        skip: queries.skip,
+        take: queries.take,
+        orderBy: queries.orderBy,
     });
     if (!users.length)
         throw new customError_1.default("Couldn't find any user data", 404);
+    //count
+    const count = yield client_1.default.user.count({ where: Object.assign({}, filters) });
+    // pagination
+    const pagination = (0, pagination_1.default)(queries, count);
+    // response send
     (0, responseHandler_1.successResponse)(res, {
         statusCode: 200,
         message: "All users data",
         payload: {
+            pagination,
             data: users,
         },
     });

@@ -12,7 +12,7 @@ userRouter
     .route("/")
     .get(user_controller_1.getAllUsers)
     .post(user_validator_1.userRegisterValidator, validation_1.default, user_controller_1.createUser);
-// bulk user create
+// bulk user create and delete
 userRouter.route("/bulk").post(user_controller_1.bulkCreateUsers).delete(user_controller_1.bulkDeleteUsers);
 userRouter
     .route("/:id")

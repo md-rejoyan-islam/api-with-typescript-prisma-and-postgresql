@@ -12,8 +12,7 @@ commentRouter
     .route("/")
     .get(comment_controller_1.getAllComments)
     .post(comment_validator_1.commentValidator, validation_1.default, comment_controller_1.createComment);
-// bulk comment create
-// bulk comment delete
+// bulk comment create and  delete
 commentRouter.route("/bulk").delete(comment_controller_1.deleteAllComments).post(comment_controller_1.bulkCommentsCreate);
 // delete by ids
 commentRouter.delete("/delete-by-ids", comment_controller_1.deleteCommentsByIds);
