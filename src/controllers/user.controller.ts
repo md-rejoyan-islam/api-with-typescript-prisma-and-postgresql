@@ -6,6 +6,7 @@ import { successResponse } from "../helper/responseHandler";
 import hashPassword from "../helper/hashPassword";
 import filterQuery from "../helper/filterQuery";
 import paginationData from "../helper/pagination";
+import { ApiResponse } from "../types/types";
 
 /**
  * @method GET
@@ -14,46 +15,49 @@ import paginationData from "../helper/pagination";
  * @access Public
  */
 
-export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
-  // filter query
-  const { queries, filters } = filterQuery(req);
-  const users = await client.user.findMany({
-    include: {
-      posts: {
-        include: {
-          comments: true,
+export const getAllUsers = asyncHandler(
+  async (req: Request, res: Response): Promise<void> => {
+    // filter query
+    const { queries, filters } = filterQuery(req);
+    const users = await client.user.findMany({
+      include: {
+        posts: {
+          include: {
+            comments: true,
+          },
         },
       },
-    },
-    where: {
-      ...filters,
-    },
-    // select: {
-    //   ...queries.select,    // select and include not work together
-    // },
-    skip: queries.skip,
-    take: queries.take,
-    orderBy: queries.orderBy,
-  });
+      where: {
+        ...filters,
+      },
+      // select: {
+      //   ...queries.select,    // select and include not work together
+      // },
+      skip: queries.skip,
+      take: queries.take,
+      orderBy: queries.orderBy,
+    });
 
-  if (!users.length) throw new CustomError("Couldn't find any user data", 404);
+    if (!users.length)
+      throw new CustomError("Couldn't find any user data", 404);
 
-  //count
-  const count = await client.user.count({ where: { ...filters } });
+    //count
+    const count = await client.user.count({ where: { ...filters } });
 
-  // pagination
-  const pagination = paginationData(queries, count);
+    // pagination
+    const pagination = paginationData(queries, count);
 
-  // response send
-  successResponse(res, {
-    statusCode: 200,
-    message: "All users data",
-    payload: {
-      pagination,
-      data: users,
-    },
-  });
-});
+    // response send
+    successResponse(res, {
+      statusCode: 200,
+      message: "All users data",
+      payload: {
+        pagination,
+        data: users,
+      },
+    });
+  }
+);
 
 /**
  * @method GET
