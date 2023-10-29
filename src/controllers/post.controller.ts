@@ -230,29 +230,31 @@ export const updatePostById = asyncHandler(
  * @access Public
  */
 
-export const deletePostById = asyncHandler(async (req, res) => {
-  const post = await client.post.findUnique({
-    where: { id: Number(req.params.id) },
-    include: {
-      comments: true,
-      user: true,
-    },
-  });
+export const deletePostById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const post = await client.post.findUnique({
+      where: { id: Number(req.params.id) },
+      include: {
+        comments: true,
+        user: true,
+      },
+    });
 
-  if (!post) throw new CustomError("Couldn't find any post data", 404);
+    if (!post) throw new CustomError("Couldn't find any post data", 404);
 
-  // deleted post
-  const deletedPost = await client.post.delete({
-    where: { id: Number(req.params.id) },
-  });
+    // deleted post
+    const deletedPost = await client.post.delete({
+      where: { id: Number(req.params.id) },
+    });
 
-  // response send
-  successResponse(res, {
-    statusCode: 200,
-    message: "Post data deleted successfully",
-    payload: deletedPost,
-  });
-});
+    // response send
+    successResponse(res, {
+      statusCode: 200,
+      message: "Post data deleted successfully",
+      payload: deletedPost,
+    });
+  }
+);
 
 /**
  * @method GET
@@ -261,26 +263,28 @@ export const deletePostById = asyncHandler(async (req, res) => {
  * @access Public
  */
 
-export const getAllCommentsOfPost = asyncHandler(async (req, res) => {
-  const post = await client.post.findUnique({
-    where: { id: Number(req.params.id) },
-    include: {
-      comments: true,
-      user: true,
-    },
-  });
+export const getAllCommentsOfPost = asyncHandler(
+  async (req: Request, res: Response) => {
+    const post = await client.post.findUnique({
+      where: { id: Number(req.params.id) },
+      include: {
+        comments: true,
+        user: true,
+      },
+    });
 
-  if (!post) throw new CustomError("Couldn't find any post data", 404);
+    if (!post) throw new CustomError("Couldn't find any post data", 404);
 
-  // response send
-  successResponse(res, {
-    statusCode: 200,
-    message: `All comments of post ${post.id}`,
-    payload: {
-      comments: post.comments,
-    },
-  });
-}); /**
+    // response send
+    successResponse(res, {
+      statusCode: 200,
+      message: `All comments of post ${post.id}`,
+      payload: {
+        comments: post.comments,
+      },
+    });
+  }
+); /**
 
  * @method GET
  * @route /api/posts/:id/user
@@ -288,25 +292,27 @@ export const getAllCommentsOfPost = asyncHandler(async (req, res) => {
  * @access Public
  */
 
-export const getUserOfPost = asyncHandler(async (req, res) => {
-  const post = await client.post.findUnique({
-    where: { id: Number(req.params.id) },
-    include: {
-      user: true,
-    },
-  });
+export const getUserOfPost = asyncHandler(
+  async (req: Request, res: Response) => {
+    const post = await client.post.findUnique({
+      where: { id: Number(req.params.id) },
+      include: {
+        user: true,
+      },
+    });
 
-  if (!post) throw new CustomError("Couldn't find any post data", 404);
+    if (!post) throw new CustomError("Couldn't find any post data", 404);
 
-  // response send
-  successResponse(res, {
-    statusCode: 200,
-    message: "User data of post id :" + post.id,
-    payload: {
-      user: post.user,
-    },
-  });
-});
+    // response send
+    successResponse(res, {
+      statusCode: 200,
+      message: "User data of post id :" + post.id,
+      payload: {
+        user: post.user,
+      },
+    });
+  }
+);
 
 /**
  * @method POST
