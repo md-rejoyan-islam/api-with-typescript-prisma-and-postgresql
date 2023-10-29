@@ -24,7 +24,7 @@ postRouter
   .get(getAllPosts)
   .post(postValidator, runValidation, createPost);
 
-// bulk post create
+// bulk post create and delete
 postRouter.route("/bulk").post(bulkCreatePosts).delete(bulkDeletePosts);
 
 postRouter
