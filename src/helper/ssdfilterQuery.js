@@ -3,7 +3,7 @@
  * @return         :     {filters,queries}
  */
 
-const filterQuery = (req) => {
+const filterQueryjs = (req) => {
   let filters = { ...req.query };
 
   // sort ,page,limit exclude from filters
@@ -31,8 +31,6 @@ const filterQuery = (req) => {
 
   filters = JSON.parse(filterString);
 
-
-
   // full text search with regular expression
   if (req.query.q) {
     const search = req.query.q;
@@ -44,7 +42,7 @@ const filterQuery = (req) => {
       $or: [
         { name: regularExpression },
         { email: regularExpression },
-        { mobile: regularExpression},
+        { mobile: regularExpression },
       ],
     };
   }
@@ -83,28 +81,8 @@ const filterQuery = (req) => {
     queries.fields = fields;
   }
 
-  /***
-   *
-   * @query : [page,limit]    :    ?page=4&limit=12
-   *
-   * @receive_data_format     :    { page: '4', limit :'12'}
-   *
-   */
-   if (!req.query.page && !req.query.limit) {
-    queries.limit = 10;
-     queries.page = 1;
-   }
-
-  if (req.query.page || req.query.limit) {
-    const { page = 1, limit = 10 } = req.query;
-    const skip = (page - 1) * Number(limit);
-    queries.page=Number(page);
-    queries.skip = skip;
-    queries.limit = Number(limit);
-  }
-
   return { filters, queries };
 };
 
 // export filterQuery
-module.exports = filterQuery;
+module.exports = filterQueryjs;

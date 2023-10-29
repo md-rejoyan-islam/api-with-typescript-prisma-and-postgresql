@@ -1,8 +1,10 @@
+import { log } from "console";
 import asyncHandler from "express-async-handler";
 import client from "../prisma/client/client";
 import CustomError from "../helper/customError";
 import { successResponse } from "../helper/responseHandler";
 import { Request, Response } from "express";
+import filterQuery from "../helper/filterQuery";
 
 /**
  * @method GET
@@ -13,65 +15,9 @@ import { Request, Response } from "express";
 
 export const getAllPosts = asyncHandler(async (req: Request, res: Response) => {
   // filter query
-  let filters: any = { ...req.query };
+  const { queries, filters } = filterQuery(req);
 
-  // sort ,page,limit exclude from filters
-  const excludeFilters = ["sort", "page", "limit", "fields"];
-  excludeFilters.forEach((field) => delete filters[field]);
-
-  if (filters && typeof filters.userId === "string") {
-    filters.userId = Number(filters.userId);
-  }
-
-  // queries
-  const queries: {
-    select?: {};
-    orderBy?: {};
-    limit?: number;
-    page?: number;
-    skip?: number;
-    take?: number;
-  } = {};
-
-  // Specify the fields to display
-  if (typeof req.query.fields === "string") {
-    const fields = req.query.fields.split(",");
-    const fieldsObj = fields.reduce((acc: any, field) => {
-      acc[field] = true;
-      return acc;
-    }, {});
-
-    queries.select = fieldsObj;
-  }
-
-  // sort query
-  if (typeof req.query.sort === "string") {
-    const sortItems = req.query.sort.split(",");
-    const sortItemObj = sortItems.reduce((acc: any, item) => {
-      if (item.startsWith("-")) {
-        acc[item.slice(1)] = "desc";
-      } else {
-        acc[item] = "asc";
-      }
-      return acc;
-    }, {});
-
-    queries.orderBy = sortItemObj;
-  }
-
-  // pagination query
-  if (!req.query.page && !req.query.limit) {
-    queries.take = 10;
-    queries.page = 1;
-  }
-
-  if (req.query.page || req.query.limit) {
-    const { page = 1, limit = 10 } = req.query;
-    const skip = (Number(page) - 1) * Number(limit);
-    queries.page = Number(page);
-    queries.skip = skip;
-    queries.take = Number(limit);
-  }
+  console.log(queries);
 
   // filter query
 
@@ -83,7 +29,9 @@ export const getAllPosts = asyncHandler(async (req: Request, res: Response) => {
     where: {
       ...filters,
     },
-    // select: queries.select,
+    // select: {
+    //   ...queries.select,    // select and include not work together
+    // },
     skip: queries.skip,
     take: queries.take,
     orderBy: queries.orderBy,

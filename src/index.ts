@@ -1,7 +1,6 @@
 import dotenv from "dotenv";
 import app from "./server";
 import { NODE_ENV, PORT } from "./secret";
-import connectDB from "./config/db";
 
 // environment variables
 dotenv.config();
