@@ -66,25 +66,27 @@ export const getAllUsers = asyncHandler(
  * @access Public
  */
 
-export const getUserById = asyncHandler(async (req: Request, res: Response) => {
-  const user = await client.user.findUnique({
-    where: { id: Number(req.params.id) },
-    include: {
-      posts: true,
-    },
-  });
+export const getUserById = asyncHandler(
+  async (req: Request, res: Response): Promise<void> => {
+    const user = await client.user.findUnique({
+      where: { id: Number(req.params.id) },
+      include: {
+        posts: true,
+      },
+    });
 
-  if (!user) throw new CustomError("Couldn't find any user data", 404);
+    if (!user) throw new CustomError("Couldn't find any user data", 404);
 
-  // response send
-  successResponse(res, {
-    statusCode: 200,
-    message: "User data",
-    payload: {
-      data: user,
-    },
-  });
-});
+    // response send
+    successResponse(res, {
+      statusCode: 200,
+      message: "User data",
+      payload: {
+        data: user,
+      },
+    });
+  }
+);
 
 /**
  * @method POST
@@ -93,33 +95,35 @@ export const getUserById = asyncHandler(async (req: Request, res: Response) => {
  * @access Public
  */
 
-export const createUser = asyncHandler(async (req: Request, res: Response) => {
-  const { email } = req.body;
+export const createUser = asyncHandler(
+  async (req: Request, res: Response): Promise<void> => {
+    const { email } = req.body;
 
-  const existEmail = await client.user.findUnique({
-    where: { email },
-  });
-  const existUsername = await client.user.findUnique({
-    where: { username: req.body.username },
-  });
-  if (existEmail) throw new CustomError("Email already exist", 400);
-  if (existUsername) throw new CustomError("Username already exist", 400);
+    const existEmail = await client.user.findUnique({
+      where: { email },
+    });
+    const existUsername = await client.user.findUnique({
+      where: { username: req.body.username },
+    });
+    if (existEmail) throw new CustomError("Email already exist", 400);
+    if (existUsername) throw new CustomError("Username already exist", 400);
 
-  // create user
-  const user = await client.user.create({
-    data: req.body,
-  });
+    // create user
+    const user = await client.user.create({
+      data: req.body,
+    });
 
-  // response send
-  successResponse(res, {
-    statusCode: 201,
-    message: "User created successfully",
-    payload: {
-      ...user,
-      password: hashPassword(req.body.password),
-    },
-  });
-});
+    // response send
+    successResponse(res, {
+      statusCode: 201,
+      message: "User created successfully",
+      payload: {
+        ...user,
+        password: hashPassword(req.body.password),
+      },
+    });
+  }
+);
 
 /**
  * @method PUT
@@ -129,7 +133,7 @@ export const createUser = asyncHandler(async (req: Request, res: Response) => {
  */
 
 export const updateUserById = asyncHandler(
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response): Promise<void> => {
     const user = await client.user.findUnique({
       where: { id: Number(req.params.id) },
       include: {
@@ -164,7 +168,7 @@ export const updateUserById = asyncHandler(
  */
 
 export const deleteUserById = asyncHandler(
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response): Promise<void> => {
     const user = await client.user.findUnique({
       where: { id: Number(req.params.id) },
       include: {
@@ -203,7 +207,7 @@ export const deleteUserById = asyncHandler(
  */
 
 export const getAllPostsOfUser = asyncHandler(
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response): Promise<void> => {
     // user check
     const user = await client.user
       .findUnique({
@@ -243,7 +247,7 @@ export const getAllCommentsOfUser = asyncHandler(async (req, res) => {});
  */
 
 export const bulkCreateUsers = asyncHandler(
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response): Promise<void> => {
     // before all data delete
     await client.user.deleteMany();
 
@@ -297,7 +301,7 @@ export const bulkUpdateUsers = asyncHandler(
  */
 
 export const bulkDeleteUsers = asyncHandler(
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response): Promise<void> => {
     // before all comment delete
     await client.comment.deleteMany();
 
