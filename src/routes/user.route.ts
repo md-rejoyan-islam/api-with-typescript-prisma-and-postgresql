@@ -19,7 +19,7 @@ userRouter
   .get(getAllUsers)
   .post(userRegisterValidator, runValidation, createUser);
 
-// bulk user create
+// bulk user create and delete
 userRouter.route("/bulk").post(bulkCreateUsers).delete(bulkDeleteUsers);
 
 userRouter
