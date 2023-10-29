@@ -231,39 +231,41 @@ export const deleteAllComments = asyncHandler(
  * @access Admin
  */
 
-export const deleteCommentsByIds = asyncHandler(async (req, res) => {
-  const commentsId = await client.comment.findMany({
-    select: {
-      id: true,
-    },
-  });
-
-  let ids: number[] = [];
-  commentsId.forEach((item) => {
-    ids.push(Number(item.id));
-  });
-
-  const idsArray: number[] = req.body.ids;
-  console.log(ids);
-
-  idsArray.forEach((item) => {
-    const includeId = ids.includes(item);
-    if (!includeId)
-      throw new CustomError(`No Comment found for id:${item}`, 404);
-  });
-
-  // delete
-  await client.comment.deleteMany({
-    where: {
-      id: {
-        in: req.body.ids,
+export const deleteCommentsByIds = asyncHandler(
+  async (req: Request, res: Response) => {
+    const commentsId = await client.comment.findMany({
+      select: {
+        id: true,
       },
-    },
-  });
+    });
 
-  // response send
-  successResponse(res, {
-    statusCode: 200,
-    message: "Successfully deleted ids data",
-  });
-});
+    let ids: number[] = [];
+    commentsId.forEach((item) => {
+      ids.push(Number(item.id));
+    });
+
+    const idsArray: number[] = req.body.ids;
+    console.log(ids);
+
+    idsArray.forEach((item) => {
+      const includeId = ids.includes(item);
+      if (!includeId)
+        throw new CustomError(`No Comment found for id:${item}`, 404);
+    });
+
+    // delete
+    await client.comment.deleteMany({
+      where: {
+        id: {
+          in: req.body.ids,
+        },
+      },
+    });
+
+    // response send
+    successResponse(res, {
+      statusCode: 200,
+      message: "Successfully deleted ids data",
+    });
+  }
+);
