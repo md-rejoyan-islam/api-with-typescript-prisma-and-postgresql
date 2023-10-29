@@ -30,3 +30,12 @@ export interface PaginationType {
   previousPage: number | null;
   nextPage: number | null;
 }
+
+export interface ApiResponse {
+  success: boolean;
+  message: string;
+  payload?: {
+    pagination?: PaginationType;
+    data?: {} | [];
+  };
+}

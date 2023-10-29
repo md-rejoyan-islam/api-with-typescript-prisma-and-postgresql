@@ -1,4 +1,5 @@
 import { Response } from "express";
+import { ApiResponse } from "../types/types";
 
 export const errorResponse = (
   res: Response,
@@ -17,12 +18,14 @@ export const errorResponse = (
 };
 
 export const successResponse = (
-  res: Response,
+  res: Response<ApiResponse>,
   { statusCode = 200, message = "Success", payload = {} }
 ) => {
-  return res.status(statusCode).json({
+  const response: ApiResponse = {
     success: true,
     message,
     ...payload,
-  });
+  };
+
+  return res.status(statusCode).json(response);
 };
