@@ -5,6 +5,7 @@ import CustomError from "../helper/customError";
 import { successResponse } from "../helper/responseHandler";
 import { Request, Response } from "express";
 import filterQuery from "../helper/filterQuery";
+import paginationData from "../helper/pagination";
 
 /**
  * @method GET
@@ -16,10 +17,6 @@ import filterQuery from "../helper/filterQuery";
 export const getAllPosts = asyncHandler(async (req: Request, res: Response) => {
   // filter query
   const { queries, filters } = filterQuery(req);
-
-  console.log(queries);
-
-  // filter query
 
   const posts = await client.post.findMany({
     include: {
@@ -41,19 +38,8 @@ export const getAllPosts = asyncHandler(async (req: Request, res: Response) => {
   //count
   const count = await client.post.count({ where: { ...filters } });
 
-  // page & limit
-  const page = Number(queries.page);
-  const limit = Number(queries.take);
-
-  // pagination object
-  const pagination = {
-    totalDocuments: count,
-    totalPages: Math.ceil(count / limit),
-    currentPage: page,
-    previousPage: page > 1 ? page - 1 : null,
-    nextPage: page < Math.ceil(count / limit) ? page + 1 : null,
-  };
-
+  // pagination
+  const pagination = paginationData(queries, count);
   // response send
   successResponse(res, {
     statusCode: 200,

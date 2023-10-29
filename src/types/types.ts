@@ -22,3 +22,11 @@ export interface CustomRequest extends Request {
 }
 
 export type tokenType = string | undefined;
+
+export interface PaginationType {
+  totalDocuments: number;
+  totalPages: number;
+  currentPage: number;
+  previousPage: number | null;
+  nextPage: number | null;
+}

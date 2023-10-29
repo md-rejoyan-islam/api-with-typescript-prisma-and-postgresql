@@ -4,6 +4,7 @@ import { Request, Response } from "express";
 import CustomError from "../helper/customError";
 import { successResponse } from "../helper/responseHandler";
 import hashPassword from "../helper/hashPassword";
+import filterQuery from "../helper/filterQuery";
 
 /**
  * @method GET
@@ -13,6 +14,8 @@ import hashPassword from "../helper/hashPassword";
  */
 
 export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
+  // filter query
+  const { queries, filters } = filterQuery(req);
   const users = await client.user.findMany({
     include: {
       posts: {
@@ -21,6 +24,15 @@ export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
         },
       },
     },
+    where: {
+      ...filters,
+    },
+    // select: {
+    //   ...queries.select,    // select and include not work together
+    // },
+    skip: queries.skip,
+    take: queries.take,
+    orderBy: queries.orderBy,
   });
 
   if (!users.length) throw new CustomError("Couldn't find any user data", 404);
