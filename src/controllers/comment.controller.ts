@@ -99,30 +99,32 @@ export const createComment = asyncHandler(
  * @access Public
  */
 
-export const updateCommentById = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+export const updateCommentById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
 
-  // comment find
-  const comment = await client.comment.findUnique({
-    where: { id: Number(id) },
-  });
+    // comment find
+    const comment = await client.comment.findUnique({
+      where: { id: Number(id) },
+    });
 
-  if (!comment) throw new CustomError("Couldn't find any comment data.", 404);
+    if (!comment) throw new CustomError("Couldn't find any comment data.", 404);
 
-  const updatedComment = await client.comment.update({
-    where: { id: Number(id) },
-    data: {
-      ...req.body,
-    },
-  });
+    const updatedComment = await client.comment.update({
+      where: { id: Number(id) },
+      data: {
+        ...req.body,
+      },
+    });
 
-  // response send
-  successResponse(res, {
-    statusCode: 200,
-    message: "Comment updated",
-    payload: updatedComment,
-  });
-});
+    // response send
+    successResponse(res, {
+      statusCode: 200,
+      message: "Comment updated",
+      payload: updatedComment,
+    });
+  }
+);
 
 /**
  * @method DELETE
@@ -131,27 +133,29 @@ export const updateCommentById = asyncHandler(async (req, res) => {
  * @access Public
  */
 
-export const deleteCommentById = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+export const deleteCommentById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
 
-  // comment find
-  const comment = await client.comment.findUnique({
-    where: { id: Number(id) },
-  });
+    // comment find
+    const comment = await client.comment.findUnique({
+      where: { id: Number(id) },
+    });
 
-  if (!comment) throw new CustomError("Couldn't find any comment data.", 404);
+    if (!comment) throw new CustomError("Couldn't find any comment data.", 404);
 
-  const deletedComment = await client.comment.delete({
-    where: { id: Number(id) },
-  });
+    const deletedComment = await client.comment.delete({
+      where: { id: Number(id) },
+    });
 
-  // response send
-  successResponse(res, {
-    statusCode: 200,
-    message: "Comment deleted",
-    payload: deletedComment,
-  });
-});
+    // response send
+    successResponse(res, {
+      statusCode: 200,
+      message: "Comment deleted",
+      payload: deletedComment,
+    });
+  }
+);
 
 /**
  * @method Bulk DELETE
@@ -160,44 +164,46 @@ export const deleteCommentById = asyncHandler(async (req, res) => {
  * @access Admin
  */
 
-export const bulkCommentsCreate = asyncHandler(async (req, res) => {
-  // array check
-  if (!Array.isArray(req.body))
-    throw new CustomError("Please provide an array of comments", 400);
+export const bulkCommentsCreate = asyncHandler(
+  async (req: Request, res: Response) => {
+    // array check
+    if (!Array.isArray(req.body))
+      throw new CustomError("Please provide an array of comments", 400);
 
-  // before all comments delete
-  await client.comment.deleteMany();
+    // before all comments delete
+    await client.comment.deleteMany();
 
-  // post id check
-  const posts = await client.post.findMany();
+    // post id check
+    const posts = await client.post.findMany();
 
-  req.body.forEach((comment) => {
-    const post = posts.find((post) => post.id === comment.postId);
-    if (!post)
-      throw new CustomError(`Post id ${comment.postId} not found`, 404);
-  });
+    req.body.forEach((comment) => {
+      const post = posts.find((post) => post.id === comment.postId);
+      if (!post)
+        throw new CustomError(`Post id ${comment.postId} not found`, 404);
+    });
 
-  // bulk create
-  await client.comment.createMany({
-    data: req.body,
-  });
+    // bulk create
+    await client.comment.createMany({
+      data: req.body,
+    });
 
-  // created comments
-  const comments = await client.comment.findMany({
-    include: {
-      post: true,
-    },
-  });
+    // created comments
+    const comments = await client.comment.findMany({
+      include: {
+        post: true,
+      },
+    });
 
-  // response send
-  successResponse(res, {
-    statusCode: 200,
-    message: "Some comments created",
-    payload: {
-      data: comments,
-    },
-  });
-});
+    // response send
+    successResponse(res, {
+      statusCode: 200,
+      message: "Some comments created",
+      payload: {
+        data: comments,
+      },
+    });
+  }
+);
 
 /**
  * @method Bulk POST
@@ -206,15 +212,17 @@ export const bulkCommentsCreate = asyncHandler(async (req, res) => {
  * @access Admin
  */
 
-export const deleteAllComments = asyncHandler(async (req, res) => {
-  await client.comment.deleteMany();
+export const deleteAllComments = asyncHandler(
+  async (req: Request, res: Response) => {
+    await client.comment.deleteMany();
 
-  // response send
-  successResponse(res, {
-    statusCode: 200,
-    message: "All comments deleted",
-  });
-});
+    // response send
+    successResponse(res, {
+      statusCode: 200,
+      message: "All comments deleted",
+    });
+  }
+);
 
 /**
  * @method DELETE
