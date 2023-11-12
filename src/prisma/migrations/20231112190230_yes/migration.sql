@@ -2,7 +2,7 @@
 CREATE TYPE "Gender" AS ENUM ('male', 'female');
 
 -- CreateEnum
-CREATE TYPE "Role" AS ENUM ('admin', 'user');
+CREATE TYPE "Role" AS ENUM ('admin', 'user', 'superAdmin');
 
 -- CreateTable
 CREATE TABLE "User" (
@@ -15,6 +15,7 @@ CREATE TABLE "User" (
     "role" "Role" DEFAULT 'user',
     "phone" TEXT,
     "age" INTEGER,
+    "isVerified" BOOLEAN NOT NULL DEFAULT false,
     "cretedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -50,9 +51,6 @@ CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Comment_email_key" ON "Comment"("email");
 
 -- AddForeignKey
 ALTER TABLE "Post" ADD CONSTRAINT "Post_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
