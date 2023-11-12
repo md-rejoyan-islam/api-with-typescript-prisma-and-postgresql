@@ -137,7 +137,7 @@ export const userLogin = asyncHandler(
     matchPassword(password, user.password);
 
     // isActivate check
-    if (user.isVerified === false) {
+    if (user?.isVerified === false) {
       throw new CustomError("Please active your account.", 400);
     }
 
