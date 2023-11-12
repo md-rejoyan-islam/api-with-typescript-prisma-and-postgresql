@@ -11,6 +11,8 @@ import {
 } from "../controllers/user.controller";
 import { userRegisterValidator } from "../middlewares/validator/file/user.validator";
 import runValidation from "../middlewares/validator/validation";
+import { isLoggedIn } from "../middlewares/protect";
+import { authorization } from "../middlewares/authorization";
 
 const userRouter = express.Router();
 
@@ -20,13 +22,20 @@ userRouter
   .post(userRegisterValidator, runValidation, createUser);
 
 // bulk user create and delete
-userRouter.route("/bulk").post(bulkCreateUsers).delete(bulkDeleteUsers);
+userRouter
+  .route("/bulk")
+  .post(isLoggedIn, authorization("admin", "superAdmin"), bulkCreateUsers)
+  .delete(isLoggedIn, authorization("admin", "superAdmin"), bulkDeleteUsers);
 
 userRouter
   .route("/:id")
   .get(getUserById)
-  .put(updateUserById)
-  .delete(deleteUserById);
+  .put(isLoggedIn, authorization("admin", "superAdmin", "user"), updateUserById)
+  .delete(
+    isLoggedIn,
+    authorization("admin", "superAdmin", "user"),
+    deleteUserById
+  );
 
 // get all post of user
 userRouter.route("/:id/posts").get(getAllPostsOfUser);
