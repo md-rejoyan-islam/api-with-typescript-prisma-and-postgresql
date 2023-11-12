@@ -30,7 +30,7 @@ userRouter
 // bulk user create and delete
 userRouter
   .route("/bulk")
-  .post(isLoggedIn, authorization("admin", "superAdmin"), bulkCreateUsers)
+  .post(bulkCreateUsers)
   .delete(isLoggedIn, authorization("admin", "superAdmin"), bulkDeleteUsers);
 
 userRouter
