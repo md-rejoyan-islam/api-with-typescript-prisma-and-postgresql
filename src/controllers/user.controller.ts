@@ -6,7 +6,6 @@ import { successResponse } from "../helper/responseHandler";
 import hashPassword from "../helper/hashPassword";
 import filterQuery from "../helper/filterQuery";
 import paginationData from "../helper/pagination";
-import { ApiResponse } from "../types/types";
 
 /**
  * @method GET

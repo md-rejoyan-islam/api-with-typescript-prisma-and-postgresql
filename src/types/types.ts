@@ -1,4 +1,6 @@
+import { jwtLoginTokenSecret } from "./../secret";
 import { Request } from "express";
+import { type } from "os";
 
 export type PortType = number | string;
 
@@ -8,6 +10,7 @@ export interface User {
   id: number;
   email: string;
   password: string;
+  role?: string;
 }
 
 export interface Post {
@@ -39,3 +42,12 @@ export interface ApiResponse {
     data?: {} | [];
   };
 }
+
+export type Role = "admin" | "superAdmin" | "user";
+
+export interface RequestWithUser extends Request {
+  me?: User;
+}
+
+export type jwtSecretKeyType = string;
+export type jwtKeyExpireType = string;

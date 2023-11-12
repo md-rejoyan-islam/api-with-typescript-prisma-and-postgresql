@@ -16,22 +16,32 @@ import {
   postValidator,
 } from "../middlewares/validator/file/post.validator";
 import runValidation from "../middlewares/validator/validation";
+import { authorization } from "../middlewares/authorization";
 
 const postRouter = express.Router();
 
 postRouter
   .route("/")
   .get(getAllPosts)
-  .post(postValidator, runValidation, createPost);
+  // admin and superAdmin can create post
+  .post(
+    postValidator,
+    runValidation,
+    authorization("admin", "superAdmin"),
+    createPost
+  );
 
 // bulk post create and delete
-postRouter.route("/bulk").post(bulkCreatePosts).delete(bulkDeletePosts);
+postRouter
+  .route("/bulk")
+  .post(authorization("admin", "superAdmin"), bulkCreatePosts)
+  .delete(authorization("admin", "superAdmin"), bulkDeletePosts);
 
 postRouter
   .route("/:id")
   .get(getPostById)
-  .put(updatePostById)
-  .delete(deletePostById);
+  .put(authorization("admin", "superAdmin"), updatePostById)
+  .delete(authorization("admin", "superAdmin"), deletePostById);
 
 // comment add in post
 postRouter.put(

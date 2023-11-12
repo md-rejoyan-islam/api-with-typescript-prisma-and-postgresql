@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { errorResponse } from "../helper/responseHandler";
 import { PrismaClientValidationError } from "@prisma/client/runtime/library";
-import { log } from "console";
 
 const errorHandler = (
   err: Error,

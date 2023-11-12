@@ -1,4 +1,3 @@
-import { log } from "console";
 import asyncHandler from "express-async-handler";
 import client from "../prisma/client/client";
 import CustomError from "../helper/customError";

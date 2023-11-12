@@ -21,6 +21,7 @@ model User {
   phone     String?
   age       Int?
   posts     Post[]
+  isVerified Boolean  @default(false)
   cretedAt  DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
