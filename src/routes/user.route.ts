@@ -19,7 +19,13 @@ const userRouter = express.Router();
 userRouter
   .route("/")
   .get(getAllUsers)
-  .post(userRegisterValidator, runValidation, createUser);
+  .post(
+    isLoggedIn,
+    authorization("admin", "superAdmin"),
+    userRegisterValidator,
+    runValidation,
+    createUser
+  );
 
 // bulk user create and delete
 userRouter

@@ -45,7 +45,7 @@ authRouter
 
 authRouter
   .route("/login")
-  .post(userLoginValidator, runValidation, isLoggedOut, userLogin);
+  .post(isLoggedOut, userLoginValidator, runValidation, userLogin);
 
 authRouter.route("/logout").post(isLoggedIn, userLogout);
 

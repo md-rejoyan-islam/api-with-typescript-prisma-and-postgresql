@@ -147,7 +147,7 @@ export const updateUserById = asyncHandler(
       include: {
         posts: true,
       },
-      data: req.body,
+      data: { ...req.body, password: hashPassword(req.body.password) },
     });
 
     // response send

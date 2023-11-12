@@ -14,10 +14,10 @@ export const postValidator = [
     .withMessage("Body is required.Please provide a body.")
     .isLength({ min: 10 })
     .withMessage("Body must be at least 10 characters long."),
-  body("userId")
-    .trim()
-    .notEmpty()
-    .withMessage("User Id is required.Please provide a user id."),
+  // body("userId")
+  //   .trim()
+  //   .notEmpty()
+  //   .withMessage("User Id is required.Please provide a user id."),
 ];
 
 export const postCommentDataValidator = [

@@ -1,6 +1,5 @@
 import { CustomRequest, tokenType } from "./../types/types";
 import jwt from "jsonwebtoken";
-import createError from "http-errors";
 import asyncHandler from "express-async-handler";
 import { jwtLoginTokenSecret } from "../secret";
 import { errorResponse } from "../helper/responseHandler";
@@ -9,6 +8,7 @@ import { User } from "../types/types";
 import { NextFunction, Response } from "express";
 import CustomError from "../helper/customError";
 import client from "../prisma/client/client";
+import { log } from "console";
 
 export const isLoggedIn = asyncHandler(
   async (
@@ -53,16 +53,15 @@ export const isLoggedIn = asyncHandler(
 
 export const isLoggedOut = asyncHandler(async (req, res, next) => {
   const authHeader: string | undefined = req.headers.authorization; //|| req.headers.Authorization;
-
   const authToken = req?.cookies?.accessToken;
   let token: tokenType;
 
-  if (!authHeader && !authToken) {
+  if (authHeader || authToken) {
     token = authHeader?.split(" ")[1] || authToken;
   }
 
   if (token) {
-    throw createError(400, "User is already logged in");
+    throw new CustomError("User is already logged in", 400);
   }
 
   next();

@@ -1,3 +1,4 @@
+import { log } from "console";
 import asyncHandler from "express-async-handler";
 import client from "../prisma/client/client";
 import CustomError from "../helper/customError";
@@ -5,6 +6,8 @@ import { successResponse } from "../helper/responseHandler";
 import { Request, Response } from "express";
 import filterQuery from "../helper/filterQuery";
 import paginationData from "../helper/pagination";
+import { RequestWithUser } from "../types/types";
+import e from "cors";
 
 /**
  * @method GET
@@ -86,29 +89,43 @@ export const getPostById = asyncHandler(async (req: Request, res: Response) => {
  * @access Public
  */
 
-export const createPost = asyncHandler(async (req: Request, res: Response) => {
-  const { userId } = req.body;
+export const createPost = asyncHandler(
+  async (req: RequestWithUser, res: Response) => {
+    let userId;
 
-  const user = await client.user.findUnique({
-    where: { id: Number(userId) },
-  });
+    //if admin or super admin
+    if (req.me?.role === "admin" || req.me?.role === "superAdmin") {
+      userId = req.body.userId;
+    }
+    // if user
+    else {
+      userId = req.me?.id;
+    }
 
-  if (!user) throw new CustomError("User not found", 404);
+    // check user id
+    if (!userId) throw new CustomError("User id not found", 404);
 
-  const post = await client.post.create({
-    data: {
-      ...req.body,
-      userId: Number(userId),
-    },
-  });
+    const user = await client.user.findUnique({
+      where: { id: Number(userId) },
+    });
 
-  // success response send
-  successResponse(res, {
-    statusCode: 201,
-    message: "Post created successfully",
-    payload: post,
-  });
-});
+    if (!user) throw new CustomError("User not found", 404);
+
+    const post = await client.post.create({
+      data: {
+        ...req.body,
+        userId: Number(userId),
+      },
+    });
+
+    // success response send
+    successResponse(res, {
+      statusCode: 201,
+      message: "Post created successfully",
+      payload: post,
+    });
+  }
+);
 
 /**
  * @method PUT
@@ -329,6 +346,12 @@ export const bulkUpdatePosts = asyncHandler(async (req, res) => {});
 
 export const commentOnPost = asyncHandler(
   async (req: Request, res: Response) => {
+    const post = await client.post.findUnique({
+      where: { id: Number(req.params.id) },
+    });
+
+    if (!post) throw new CustomError("Couldn't find any post data", 404);
+
     // comment on post
 
     const data = await client.post.update({

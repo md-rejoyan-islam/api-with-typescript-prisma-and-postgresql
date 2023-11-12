@@ -52,7 +52,10 @@ enum Gender {
   female
 }
 
+
+
 enum Role {
   admin
   user
+  superAdmin
 }

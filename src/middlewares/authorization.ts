@@ -13,9 +13,15 @@ export const authorization = (...role: Role[]) => {
 
     // make sure the user is authorized
 
-    const id = req?.params?.id;
+    let id = req?.params?.id;
+
+    // if post id
+    if (req.baseUrl === "/api/posts") {
+      id = String(req?.me?.id);
+    }
 
     if (id) {
+      // others
       if (
         req?.me?.role === "admin" ||
         req?.me?.role === "superAdmin" ||

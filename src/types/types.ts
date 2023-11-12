@@ -1,6 +1,4 @@
-import { jwtLoginTokenSecret } from "./../secret";
 import { Request } from "express";
-import { type } from "os";
 
 export type PortType = number | string;
 
