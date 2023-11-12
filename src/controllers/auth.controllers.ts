@@ -23,7 +23,7 @@ import { RequestWithUser } from "../types/types";
  * @apiRoute          /api/v1/auth/register
  * @apiAccess         public
  *
- * @apiBody           { name, email, password, gender }
+ * @apiBody           { name, username, email, password, gender }
  *
  * @apiSuccess        { success: true , message: active your account by verify email, data: {} }
  * @apiFailed         { success: false , error: { status, message }
@@ -72,7 +72,7 @@ export const userRegister = asyncHandler(
     };
 
     // send email
-    sendAccountVerifyMail(emailData);
+    await sendAccountVerifyMail(emailData);
 
     // cookie set
     res.cookie("verifyToken", verifyToken, {
