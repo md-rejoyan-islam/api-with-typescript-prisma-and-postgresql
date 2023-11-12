@@ -7,14 +7,18 @@ import createJWT from "../helper/createJWT";
 import {
   jwtLoginTokenExpire,
   jwtLoginTokenSecret,
+  jwtSecret,
   verifyKey,
   verifyKeyExpire,
 } from "../secret";
-import { successResponse } from "../helper/responseHandler";
+import { errorResponse, successResponse } from "../helper/responseHandler";
 import sendAccountVerifyMail from "../utils/email/accountActivationMail";
 import matchPassword from "../helper/matchPassword";
-import { RequestWithUser } from "../types/types";
-
+import { RequestWithUser, User } from "../types/types";
+import { log } from "console";
+import hashPassword from "../helper/hashPassword";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 /**
  *
  * @apiDescription    Create a new user account
@@ -40,6 +44,7 @@ export const userRegister = asyncHandler(
     const existEmail = await client.user.findUnique({
       where: { email },
     });
+    console.log(existEmail);
 
     const existUsername = await client.user.findUnique({
       where: { username: req.body.username },
@@ -60,7 +65,7 @@ export const userRegister = asyncHandler(
 
     // create user
     const user = await client.user.create({
-      data: req.body,
+      data: { ...req.body, password: hashPassword(req.body.password) },
     });
 
     // prepare email data
@@ -220,3 +225,152 @@ export const me = asyncHandler(
     });
   }
 );
+
+/**
+ *
+ * @apiDescription    Active user account by code
+ * @apiMethod         POST
+ *
+ * @apiRoute          /api/v1/auth/activate
+ * @apiAccess         registered user
+ *
+ * @apiBody           { code }
+ *
+ * @apiSuccess        { success: true , message: Successfully activated your account., data: {} }
+ * @apiFailed         { success: false , error: { status, message }
+ *
+ */
+export const activeUserAccountByCode = asyncHandler(
+  async (req: Request, res: Response): Promise<void> => {
+    // token
+    const token = req.cookies.verifyToken;
+
+    // check token
+    if (!token) {
+      throw new CustomError("Token not found", 400);
+    }
+
+    // verify token
+    jwt.verify(token, jwtSecret, async (err: Error | null, decoded: any) => {
+      if (err) {
+        return errorResponse(res, {
+          statusCode: 400,
+          message: "Time expired! ",
+        });
+      }
+
+      // check if user is already verified
+      const user = await client.user.findUnique({
+        where: { email: decoded?.email },
+      });
+
+      // user exist check
+      if (!user) {
+        return errorResponse(res, {
+          statusCode: 400,
+          message: "Couldn't find any user account!. Please register.",
+        });
+      }
+
+      if (user.isVerified === true) {
+        return errorResponse(res, {
+          statusCode: 400,
+          message: "Your account is already active. Please login.",
+        });
+      }
+
+      // check code
+      const code = bcrypt.compareSync(req.body.code, decoded.code);
+
+      if (!code) {
+        return errorResponse(res, {
+          statusCode: 400,
+          message: "wrong code",
+        });
+      } else {
+        await client.user.update({
+          where: { email: decoded?.email },
+          data: { isVerified: true },
+        });
+
+        // cookie clear
+        res?.clearCookie("verifyToken", {
+          sameSite: "strict",
+        });
+
+        // response send
+        return successResponse(res, {
+          statusCode: 201,
+          message: "Successfully activated your account.",
+        });
+      }
+    });
+  }
+);
+
+/**
+ *
+ * @apiDescription    Resend verification code to email
+ * @apiMethod         POST
+ *
+ * @apiRoute          /api/v1/auth/resend-active-code
+ * @apiAccess         registered user
+ *
+ * @apiBody           { email}
+ *
+ * @apiSuccess        { success: true , message: Email has been sent to email. Follow the instruction to activate your account, data: {} }
+ * @apiFailed         { success: false , error: { status, message }
+ *
+ */
+export const resendActivationCode = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  const user = await client.user.findUnique({ where: { email } });
+
+  // check: user is exist or not.
+  if (!user) {
+    throw new CustomError(
+      "Couldn't find any user account!. Please register.",
+      400
+    );
+  }
+
+  // check: user is activate or not
+  if (user.isVerified === true) {
+    throw new CustomError("Your account is already active. Please login.", 400);
+  }
+
+  // random hash code
+  const { code, hashCode } = randomHashCode(4);
+
+  // create verify token
+  const verifyToken = createJWT(
+    { email, code: hashCode },
+    verifyKey,
+    verifyKeyExpire
+  );
+
+  // prepare email data
+  const emailData = {
+    email,
+    subject: "Account Activation Code",
+    code,
+    verifyToken,
+  };
+
+  // send email
+  sendAccountVerifyMail(emailData);
+
+  res.cookie("verifyToken", verifyToken, {
+    httpOnly: true,
+    maxAge: 1000 * 60 * 5, // 5 min
+    secure: true, // only https
+    sameSite: "none",
+  });
+
+  // response send
+  successResponse(res, {
+    statusCode: 200,
+    message: `Email has been sent to ${email}. Follow the instruction to activate your account`,
+  });
+});

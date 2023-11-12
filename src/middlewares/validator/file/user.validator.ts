@@ -69,7 +69,7 @@ const passwordResetValidator = [
     .withMessage("Code must be  4 characters long."),
 ];
 
-const userVerifyCodeValidator = [
+export const userVerifyCodeValidator = [
   body("code")
     .notEmpty()
     .withMessage("Code is required.Please provide a code.")
@@ -77,7 +77,7 @@ const userVerifyCodeValidator = [
     .withMessage("Code must be at least 4 characters long."),
 ];
 
-const userResendCodeValidator = [
+export const userResendCodeValidator = [
   body("email")
     .trim()
     .notEmpty()

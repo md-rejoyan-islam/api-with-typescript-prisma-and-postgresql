@@ -10,6 +10,7 @@ import { NODE_ENV } from "./secret";
 import userRouter from "./routes/user.route";
 import postRouter from "./routes/post.route";
 import commentRouter from "./routes/comment.route";
+import authRouter from "./routes/auth.route";
 
 const app = express();
 
@@ -43,6 +44,7 @@ app.get("/", (req: Request, res: Response): void => {
 app.use("/api/users", userRouter);
 app.use("/api/posts", postRouter);
 app.use("/api/comments", commentRouter);
+app.use("/api/auth", authRouter);
 
 // invalid route handler
 app.use((req: Request, res: Response, next: NextFunction): void => {

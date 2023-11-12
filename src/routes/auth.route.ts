@@ -4,9 +4,13 @@ import runValidation from "../middlewares/validator/validation";
 import {
   userLoginValidator,
   userRegisterValidator,
+  userResendCodeValidator,
+  userVerifyCodeValidator,
 } from "../middlewares/validator/file/user.validator";
 import {
+  activeUserAccountByCode,
   me,
+  resendActivationCode,
   userLogin,
   userLogout,
   userRegister,
@@ -18,6 +22,26 @@ const authRouter = express.Router();
 authRouter
   .route("/register")
   .post(userRegisterValidator, runValidation, isLoggedOut, userRegister);
+
+// active user account by code
+authRouter
+  .route("/activate")
+  .post(
+    isLoggedOut,
+    userVerifyCodeValidator,
+    runValidation,
+    activeUserAccountByCode
+  );
+
+// resend verification code  to email
+authRouter
+  .route("/resend-active-code")
+  .post(
+    isLoggedOut,
+    userResendCodeValidator,
+    runValidation,
+    resendActivationCode
+  );
 
 authRouter
   .route("/login")

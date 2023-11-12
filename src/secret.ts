@@ -25,6 +25,8 @@ export const verifyKeyExpire: jwtKeyExpireType =
 export const jwtLoginTokenExpire: string =
   process.env.JWT_LOGIN_EXPIRE || "365d";
 
+export const jwtSecret = process.env.JWT_SECRET_KEY || "secret";
+
 export const smtpHost: string = process.env.SMTP_HOST || "smtp.gmail.com";
 export const smtpPort: number = Number(process.env.SMTP_PORT) || 587;
 export const emailUser: string = process.env.EMAIL_HOST_USER || "";
