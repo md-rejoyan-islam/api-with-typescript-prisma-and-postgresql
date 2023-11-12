@@ -12,7 +12,11 @@ const transport = nodemailer.createTransport({
   },
 });
 
-const sendAccountVerifyMail = async (emailData: any) => {
+const sendAccountVerifyMail = async (emailData: {
+  code: string;
+  email: string;
+  subject: string;
+}) => {
   try {
     const { code } = emailData;
     const mailInfo = {

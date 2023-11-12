@@ -9,6 +9,7 @@ export interface User {
   email: string;
   password: string;
   role?: string;
+  isVerified?: boolean;
 }
 
 export interface Post {
