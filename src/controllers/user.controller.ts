@@ -325,3 +325,7 @@ export const bulkDeleteUsers = asyncHandler(
  */
 
 export const deleteUsersByIds = asyncHandler(async (req, res) => {});
+
+/**
+ * @description truncate
+ */

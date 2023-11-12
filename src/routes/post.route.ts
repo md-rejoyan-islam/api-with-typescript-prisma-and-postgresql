@@ -29,8 +29,8 @@ postRouter
 // bulk post create and delete
 postRouter
   .route("/bulk")
-  .post(authorization("admin", "superAdmin"), bulkCreatePosts)
-  .delete(authorization("admin", "superAdmin"), bulkDeletePosts);
+  .post(isLoggedIn, authorization("admin", "superAdmin"), bulkCreatePosts)
+  .delete(isLoggedIn, authorization("admin", "superAdmin"), bulkDeletePosts);
 
 postRouter
   .route("/:id")
