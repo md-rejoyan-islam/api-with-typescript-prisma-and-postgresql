@@ -2,6 +2,7 @@ import nodemailer from "nodemailer";
 import asyncHandler from "express-async-handler";
 import createError from "http-errors";
 import { emailPass, emailUser, smtpHost, smtpPort } from "../../secret";
+import { EmailDataType } from "../../types/types";
 
 const transport = nodemailer.createTransport({
   host: smtpHost, // host name
@@ -12,11 +13,9 @@ const transport = nodemailer.createTransport({
   },
 });
 
-const sendAccountVerifyMail = async (emailData: {
-  code: string;
-  email: string;
-  subject: string;
-}) => {
+const sendAccountVerifyMail = async (
+  emailData: EmailDataType
+): Promise<void> => {
   try {
     const { code } = emailData;
     const mailInfo = {

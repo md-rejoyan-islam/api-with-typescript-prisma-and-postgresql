@@ -14,7 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isLoggedOut = exports.isLoggedIn = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const http_errors_1 = __importDefault(require("http-errors"));
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const secret_1 = require("../secret");
 const responseHandler_1 = require("../helper/responseHandler");
@@ -50,11 +49,11 @@ exports.isLoggedOut = (0, express_async_handler_1.default)((req, res, next) => _
     const authHeader = req.headers.authorization; //|| req.headers.Authorization;
     const authToken = (_b = req === null || req === void 0 ? void 0 : req.cookies) === null || _b === void 0 ? void 0 : _b.accessToken;
     let token;
-    if (!authHeader && !authToken) {
+    if (authHeader || authToken) {
         token = (authHeader === null || authHeader === void 0 ? void 0 : authHeader.split(" ")[1]) || authToken;
     }
     if (token) {
-        throw (0, http_errors_1.default)(400, "User is already logged in");
+        throw new customError_1.default("User is already logged in", 400);
     }
     next();
 }));

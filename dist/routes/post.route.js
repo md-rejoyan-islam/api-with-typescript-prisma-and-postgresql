@@ -7,18 +7,23 @@ const express_1 = __importDefault(require("express"));
 const post_controller_1 = require("../controllers/post.controller");
 const post_validator_1 = require("../middlewares/validator/file/post.validator");
 const validation_1 = __importDefault(require("../middlewares/validator/validation"));
+const authorization_1 = require("../middlewares/authorization");
+const protect_1 = require("../middlewares/protect");
 const postRouter = express_1.default.Router();
 postRouter
     .route("/")
     .get(post_controller_1.getAllPosts)
-    .post(post_validator_1.postValidator, validation_1.default, post_controller_1.createPost);
+    .post(protect_1.isLoggedIn, post_validator_1.postValidator, validation_1.default, post_controller_1.createPost);
 // bulk post create and delete
-postRouter.route("/bulk").post(post_controller_1.bulkCreatePosts).delete(post_controller_1.bulkDeletePosts);
+postRouter
+    .route("/bulk")
+    .post((0, authorization_1.authorization)("admin", "superAdmin"), post_controller_1.bulkCreatePosts)
+    .delete((0, authorization_1.authorization)("admin", "superAdmin"), post_controller_1.bulkDeletePosts);
 postRouter
     .route("/:id")
     .get(post_controller_1.getPostById)
-    .put(post_controller_1.updatePostById)
-    .delete(post_controller_1.deletePostById);
+    .put(protect_1.isLoggedIn, (0, authorization_1.authorization)("admin", "superAdmin", "user"), post_controller_1.updatePostById)
+    .delete(protect_1.isLoggedIn, (0, authorization_1.authorization)("admin", "superAdmin", "user"), post_controller_1.deletePostById);
 // comment add in post
 postRouter.put("/:id/add-comment", post_validator_1.postCommentDataValidator, validation_1.default, post_controller_1.commentOnPost);
 // get all post comments

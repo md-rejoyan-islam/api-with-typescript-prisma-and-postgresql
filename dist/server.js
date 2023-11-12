@@ -15,6 +15,7 @@ const secret_1 = require("./secret");
 const user_route_1 = __importDefault(require("./routes/user.route"));
 const post_route_1 = __importDefault(require("./routes/post.route"));
 const comment_route_1 = __importDefault(require("./routes/comment.route"));
+const auth_route_1 = __importDefault(require("./routes/auth.route"));
 const app = (0, express_1.default)();
 // environment variables
 dotenv_1.default.config();
@@ -40,6 +41,7 @@ app.get("/", (req, res) => {
 app.use("/api/users", user_route_1.default);
 app.use("/api/posts", post_route_1.default);
 app.use("/api/comments", comment_route_1.default);
+app.use("/api/auth", auth_route_1.default);
 // invalid route handler
 app.use((req, res, next) => {
     next(new customError_1.default("Invalid route", 404));

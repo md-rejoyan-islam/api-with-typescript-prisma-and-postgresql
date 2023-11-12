@@ -15,10 +15,10 @@ exports.postValidator = [
         .withMessage("Body is required.Please provide a body.")
         .isLength({ min: 10 })
         .withMessage("Body must be at least 10 characters long."),
-    (0, express_validator_1.body)("userId")
-        .trim()
-        .notEmpty()
-        .withMessage("User Id is required.Please provide a user id."),
+    // body("userId")
+    //   .trim()
+    //   .notEmpty()
+    //   .withMessage("User Id is required.Please provide a user id."),
 ];
 exports.postCommentDataValidator = [
     (0, express_validator_1.body)("name")

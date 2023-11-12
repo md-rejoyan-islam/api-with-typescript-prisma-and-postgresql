@@ -89,7 +89,19 @@ exports.getPostById = (0, express_async_handler_1.default)((req, res) => __await
  * @access Public
  */
 exports.createPost = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { userId } = req.body;
+    var _a, _b, _c;
+    let userId;
+    //if admin or super admin
+    if (((_a = req.me) === null || _a === void 0 ? void 0 : _a.role) === "admin" || ((_b = req.me) === null || _b === void 0 ? void 0 : _b.role) === "superAdmin") {
+        userId = req.body.userId;
+    }
+    // if user
+    else {
+        userId = (_c = req.me) === null || _c === void 0 ? void 0 : _c.id;
+    }
+    // check user id
+    if (!userId)
+        throw new customError_1.default("User id not found", 404);
     const user = yield client_1.default.user.findUnique({
         where: { id: Number(userId) },
     });
@@ -282,6 +294,11 @@ exports.bulkUpdatePosts = (0, express_async_handler_1.default)((req, res) => __a
  * @access  Public
  */
 exports.commentOnPost = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const post = yield client_1.default.post.findUnique({
+        where: { id: Number(req.params.id) },
+    });
+    if (!post)
+        throw new customError_1.default("Couldn't find any post data", 404);
     // comment on post
     const data = yield client_1.default.post.update({
         where: { id: Number(req.params.id) },

@@ -134,7 +134,7 @@ exports.updateUserById = (0, express_async_handler_1.default)((req, res) => __aw
         include: {
             posts: true,
         },
-        data: req.body,
+        data: Object.assign(Object.assign({}, req.body), { password: (0, hashPassword_1.default)(req.body.password) }),
     });
     // response send
     (0, responseHandler_1.successResponse)(res, {

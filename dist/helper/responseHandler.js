@@ -12,6 +12,7 @@ const errorResponse = (res, { statusCode = 500, message = "Unknown Server Error"
 };
 exports.errorResponse = errorResponse;
 const successResponse = (res, { statusCode = 200, message = "Success", payload = {} }) => {
-    return res.status(statusCode).json(Object.assign({ success: true, message }, payload));
+    const response = Object.assign({ success: true, message }, payload);
+    return res.status(statusCode).json(response);
 };
 exports.successResponse = successResponse;

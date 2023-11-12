@@ -50,3 +50,9 @@ export interface RequestWithUser extends Request {
 
 export type jwtSecretKeyType = string;
 export type jwtKeyExpireType = string;
+
+export interface EmailDataType {
+  code: string;
+  email: string;
+  subject: string;
+}

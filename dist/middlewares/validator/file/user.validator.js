@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userLoginValidator = exports.userRegisterValidator = void 0;
+exports.userResendCodeValidator = exports.userVerifyCodeValidator = exports.userLoginValidator = exports.userRegisterValidator = void 0;
 const express_validator_1 = require("express-validator");
 const customError_1 = __importDefault(require("../../../helper/customError"));
 exports.userRegisterValidator = [
@@ -64,14 +64,14 @@ const passwordResetValidator = [
         .isLength({ min: 4 })
         .withMessage("Code must be  4 characters long."),
 ];
-const userVerifyCodeValidator = [
+exports.userVerifyCodeValidator = [
     (0, express_validator_1.body)("code")
         .notEmpty()
         .withMessage("Code is required.Please provide a code.")
         .isLength({ min: 4 })
         .withMessage("Code must be at least 4 characters long."),
 ];
-const userResendCodeValidator = [
+exports.userResendCodeValidator = [
     (0, express_validator_1.body)("email")
         .trim()
         .notEmpty()
