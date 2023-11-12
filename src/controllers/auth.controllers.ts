@@ -145,6 +145,7 @@ export const userLogin = asyncHandler(
     const accessToken = createJWT(
       { email },
       jwtLoginTokenSecret,
+
       jwtLoginTokenExpire
     );
 
